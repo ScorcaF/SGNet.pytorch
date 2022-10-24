@@ -41,7 +41,8 @@ class ETHUCYDataLayer(data.Dataset):
         elif split == 'val':
             f = open(os.path.join(args.eth_root, args.data_root, 'val', args.data_root+'_val.pkl'), 'rb')
         elif split == 'test':
-            f = open(os.path.join(args.eth_root, args.data_root, 'test', args.data_root+'_test.pkl'), 'rb')
+#             f = open(os.path.join(args.eth_root, args.data_root, 'test', args.data_root+'_test.pkl'), 'rb')
+              f = open(os.path.join('data', args.data_root+'_test.pkl'), 'rb')
         else:
             raise ValueError()
 
