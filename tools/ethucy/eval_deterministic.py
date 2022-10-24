@@ -9,9 +9,9 @@ import torch
 from torch import nn, optim
 from torch.nn import functional as F
 from torch.utils import data
+sys.path.append(os.getcwd())
 
-
-from configs.ethucy import parse_sgd_args as parse_args
+from configs.ethucy.ethucy import parse_sgnet_args as parse_args
 import lib.utils as utl
 from lib.models import build_model
 from lib.losses import rmse_loss
@@ -48,3 +48,4 @@ def main(args):
 
 if __name__ == '__main__':
     main(parse_args())
+
