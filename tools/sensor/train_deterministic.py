@@ -15,7 +15,7 @@ from configs.ethucy.ethucy import parse_sgnet_args as parse_args
 import lib.utils as utl
 from lib.models import build_model
 from lib.losses import rmse_loss
-from lib.utils.sensor_train_utils import train, val, test
+from lib.utils.sensor_train_utils import train, test
 
 
 
@@ -46,9 +46,9 @@ def main(args):
 
     train_gen = utl.build_data_loader(args, 'train', batch_size = 1)
     # val_gen = utl.build_data_loader(args, 'val', batch_size = 1)
-    # test_gen = utl.build_data_loader(args, 'test', batch_size = 1)
+    test_gen = utl.build_data_loader(args, 'test', batch_size = 1)
     # print("Number of validation samples:", val_gen.__len__())
-    # print("Number of test samples:", test_gen.__len__())
+    print("Number of test samples:", test_gen.__len__())
     # train
     min_loss = 1e6
     min_ADE_08 = 10e5
@@ -74,7 +74,7 @@ def main(args):
 
 
         # # test
-        # test_loss, ADE_08, FDE_08, ADE_12, FDE_12 = test(model, test_gen, criterion, device)
+        test_loss, ADE, FDE, = test(model, test_gen, criterion, device)
 
 
 if __name__ == '__main__':
