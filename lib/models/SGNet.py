@@ -1,4 +1,5 @@
 
+
 import torch
 import torch.nn as nn
 from .feature_extractor import build_feature_extractor
@@ -19,7 +20,7 @@ class SGNet(nn.Module):
                                                      self.pred_dim),
                                                      nn.Tanh())
             self.flow_enc_cell = nn.GRUCell(self.hidden_size*2, self.hidden_size)
-        elif self.dataset in ['ETH', 'HOTEL','UNIV','ZARA1', 'ZARA2']:
+        elif self.dataset in ['ETH', 'HOTEL','UNIV','ZARA1', 'ZARA2', 'SENSOR']:
             self.pred_dim = 2
             self.regressor = nn.Sequential(nn.Linear(self.hidden_size, 
                                                         self.pred_dim))  
@@ -111,7 +112,7 @@ class SGNet(nn.Module):
         for enc_step in range(start_index, self.enc_steps):
             
             traj_enc_hidden = self.traj_enc_cell(self.enc_drop(torch.cat((traj_input[:,enc_step,:], goal_for_enc), 1)), traj_enc_hidden)
-            if self.dataset in ['JAAD','PIE', 'ETH', 'HOTEL','UNIV','ZARA1', 'ZARA2']:
+            if self.dataset in ['JAAD','PIE', 'ETH', 'HOTEL','UNIV','ZARA1', 'ZARA2', 'SENSOR']:
                 enc_hidden = traj_enc_hidden
             # generate hidden states for goal and decoder 
             goal_hidden = self.enc_to_goal_hidden(enc_hidden)
@@ -128,7 +129,7 @@ class SGNet(nn.Module):
             
 
     def forward(self, inputs, start_index = 0):
-        if self.dataset in ['JAAD','PIE']:
+        if self.dataset in ['JAAD','PIE', 'SENSOR']:
             traj_input = self.feature_extractor(inputs)
             all_goal_traj, all_dec_traj = self.encoder(traj_input)
             return all_goal_traj, all_dec_traj
