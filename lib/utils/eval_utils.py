@@ -170,3 +170,17 @@ def eval_ethucy_cvae(input_traj, target_traj, cvae_all_traj):
 
 
     return result
+
+def eval_sensor(input_traj_np, target_traj_np, all_dec_traj_np):
+    ADE=0
+    FDE=0
+    for batch in range(all_dec_traj_np.shape[0]):
+        input_traj = np.expand_dims(input_traj_np[batch], axis=1)
+        target_traj = input_traj[...,:2] + target_traj_np[batch]
+        all_dec_traj = input_traj[...,:2] + all_dec_traj_np[batch]
+
+        ADE += np.mean(np.sqrt(np.sum((target_traj[-1,:,:] - all_dec_traj[-1,:,:]) ** 2, axis=-1)))
+
+        FDE += np.mean(np.sqrt(np.sum((target_traj[-1,-1,:] - all_dec_traj[-1,-1,:]) ** 2, axis=-1)))
+    return ADE, FDE
+
