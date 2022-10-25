@@ -54,6 +54,7 @@ _FEATURE_EXTRACTORS = {
     'UNIV': ETHUCYFeatureExtractor,
     'ZARA1': ETHUCYFeatureExtractor,
     'ZARA2': ETHUCYFeatureExtractor,
+    'SENSOR': ETHUCYFeatureExtractor,
 }
 
 def build_feature_extractor(args):
