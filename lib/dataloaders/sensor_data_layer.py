@@ -93,7 +93,7 @@ class WindowGenerator:
         Y = []
 
         for t in range(len(df) - self.prediction_horizon - 1):
-            x = df.iloc[t, :6].to_numpy().reshape(1, -1)
+            x = df.iloc[t, :].to_numpy().reshape(1, -1)
             y = df.iloc[t + 1: t + self.prediction_horizon + 1, :2].to_numpy()
 
             X.append(x)
