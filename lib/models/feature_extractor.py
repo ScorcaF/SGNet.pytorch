@@ -22,7 +22,7 @@ class ETHUCYFeatureExtractor(nn.Module):
     def __init__(self, args):
         super(ETHUCYFeatureExtractor, self).__init__()
         self.embbed_size = args.hidden_size
-        self.embed = nn.Sequential(nn.Linear(6, self.embbed_size), 
+        self.embed = nn.Sequential(nn.Linear(args.input_dim, self.embbed_size), 
                                         nn.ReLU()) 
 
 
