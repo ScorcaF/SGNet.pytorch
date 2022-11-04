@@ -25,8 +25,9 @@ class SENSORDataLayer(data.Dataset):
         self.args = args
         self.split = split
         self.batch_size = args.batch_size
-
-        prediction_horizon = 75
+        
+        # TODO: make parametric
+        prediction_horizon = 50
         if split == 'train':
             dataset = r'/content/expertConfig_182_nominal_202210271445.csv'
         elif split == 'test':
