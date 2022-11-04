@@ -27,7 +27,10 @@ class SENSORDataLayer(data.Dataset):
         self.batch_size = args.batch_size
 
         prediction_horizon = 75
-        dataset = r'/content/expertConfig_182_nominal_202210271445.csv'
+        if split == 'train':
+            dataset = r'/content/expertConfig_182_nominal_202210271445.csv'
+        elif split == 'test':
+            dataset = r'/content/expertConfig_183_nominal_202210271445.csv'
         window_generator = WindowGenerator(prediction_horizon)
         X, Y = window_generator.make_timeseries_dataset_from_csv(dataset)
         self.dataset = TensorDataset(torch.tensor(X),
