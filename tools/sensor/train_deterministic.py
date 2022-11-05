@@ -17,6 +17,9 @@ from lib.models import build_model
 from lib.losses import rmse_loss
 from lib.utils.sensor_train_utils import train, test
 
+from google.colab import files
+
+
 
 
 def main(args):
@@ -36,9 +39,11 @@ def main(args):
     model = model.to(device)
     if osp.isfile(args.checkpoint):
         checkpoint = torch.load(args.checkpoint, map_location=device)
-        model.load_state_dict(checkpoint['model_state_dict'])
-        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-        args.start_epoch += checkpoint['epoch']
+        
+
+        model.load_state_dict(checkpoint)
+        # optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        # args.start_epoch += checkpoint['epoch']
         del checkpoint
 
 
@@ -51,17 +56,17 @@ def main(args):
     print("Number of test samples:", test_gen.__len__())
     # train
     min_loss = 1e6
-    min_ADE_08 = 10e5
-    min_FDE_08 = 10e5
-    min_ADE_12 = 10e5
-    min_FDE_12 = 10e5
+    min_ADE = 10e5
+    min_FDE = 10e5
     best_model = None
     best_model_metric = None
 
 
-    for epoch in range(0, 10):
-
+    for epoch in range(args.start_epoch, args.epochs+args.start_epoch):
+        torch.save(model.state_dict(), save_dir + '.pth')
+        print('saved to ', save_dir + '.pth')
         train_goal_loss, train_dec_loss, total_train_loss = train(model, train_gen, criterion, optimizer, device)
+        
 
         print('Train Epoch: {} \t Goal loss: {:.4f}\t Decoder loss: {:.4f}\t Total: {:.4f}'.format(
                 epoch, train_goal_loss, train_dec_loss, total_train_loss))
@@ -70,11 +75,15 @@ def main(args):
 
         # # val
         # val_loss = val(model, val_gen, criterion, device)
-        # # lr_scheduler.step(val_loss)
+        # lr_scheduler.step(val_loss)
 
 
         # # test
         test_loss, ADE, FDE, = test(model, test_gen, criterion, device)
+        if ADE < min_ADE:
+          min_ADE = ADE
+          torch.save(model.state_dict(), save_dir + '.pth')
+          files.download(save_dir + '.pth')
 
 
 if __name__ == '__main__':
