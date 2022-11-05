@@ -25,13 +25,12 @@ class SENSORDataLayer(data.Dataset):
         self.args = args
         self.split = split
         self.batch_size = args.batch_size
-        
-        # TODO: make parametric
+
         prediction_horizon = 50
         if split == 'train':
             dataset = r'/content/expertConfig_182_nominal_202210271445.csv'
         elif split == 'test':
-            dataset = r'/content/expertConfig_183_nominal_202210271445.csv'
+            dataset = r'/content/expertConfig_183_nominal_202210271450.csv'
         window_generator = WindowGenerator(prediction_horizon)
         X, Y = window_generator.make_timeseries_dataset_from_csv(dataset)
         self.dataset = TensorDataset(torch.tensor(X),
@@ -89,7 +88,7 @@ class WindowGenerator:
 
         df = pd.read_csv(filename)
         df_observations = self.preprocess(df)
-        initial_observations_list, timeseries_list, initial_positions_list = self.make_timeseries_dataset(df_observations)
+        initial_observations_list, timeseries_list = self.make_timeseries_dataset(df_observations)
 
         return initial_observations_list, timeseries_list
     
@@ -125,11 +124,11 @@ class WindowGenerator:
 #         df_offsets = pd.concat((df_zeros, df_offsets)).reset_index(drop=True)
 #         df_offsets['timestamp'] = df_observations['timestamp']
 
-        df_observations = df_observations.merge(df_offsets, on='timestamp')
+        # df_observations = df_observations.merge(df_offsets, on='timestamp')
 
         df_observations = df_observations.drop(columns=['timestamp', 'steering', 'throttle', 'brake'])
         ordered_columns = [
-            'Travel_distance_X (m)', 'Travel_distance_Y (m)',
+            'LongGPS', 'LatGPS',
             'LongVel', 'LatVel',
             'LongAcc', 'LatAcc',
             'yawAngle', 'yawRate',
@@ -137,7 +136,7 @@ class WindowGenerator:
             'lCurvLane', 'rCurvLane',
             'lCurvDevLane', 'rCurvDevLane',
             'headingAngle',
-            'LongGPS', 'LatGPS'
+            
         ]
 
         df_observations = df_observations.reindex(columns=ordered_columns)
