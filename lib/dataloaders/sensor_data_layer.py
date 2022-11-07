@@ -26,18 +26,28 @@ class SENSORDataLayer(data.Dataset):
         self.split = split
         self.batch_size = args.batch_size
 
-        prediction_horizon = 50
+        prediction_horizon = args.dec_steps
         if split == 'train':
-            dataset = r'/content/expertConfig_182_nominal_202210271445.csv'
+            datasets = [r'/content/drive/MyDrive/driving_data/scorca_curved_1.csv',
+                        r'/content/drive/MyDrive/driving_data/yacometti_curved_1.csv'] 
+        elif split == 'val':
+            datasets = [r'/content/drive/MyDrive/driving_data/scorca_curved_2.csv',
+                        r'/content/drive/MyDrive/driving_data/yacometti_curved_2.csv'] 
         elif split == 'test':
-            dataset = r'/content/expertConfig_183_nominal_202210271450.csv'
+            datasets = [r'/content/drive/MyDrive/driving_data/scorca_curved_3.csv',
+                        r'/content/drive/MyDrive/driving_data/yacometti_curved_3.csv'] 
         window_generator = WindowGenerator(prediction_horizon)
-        X, Y = window_generator.make_timeseries_dataset_from_csv(dataset)
+        X, Y = [], []
+        for dataset in datasets:
+            X_partial, Y_partial = window_generator.make_timeseries_dataset_from_csv(dataset)
+            X.append(X_partial)
+            Y.append(Y_partial)
+        X = np.vstack(X)
+        Y = np.vstack(Y)
         self.dataset = TensorDataset(torch.tensor(X),
                                     torch.tensor(Y))
         self.length = len(Y)
          
-
         # self.dataset = 
         # self.len_dict = {}
         # for index in range(len(self.dataset)):
@@ -98,6 +108,7 @@ class WindowGenerator:
         Y = []
 
         for t in range(len(df) - self.prediction_horizon - 1):
+
             x = df.iloc[t, :].to_numpy().reshape(1, -1)
             y = df.iloc[t + 1: t + self.prediction_horizon + 1, :2].to_numpy()
 
@@ -142,4 +153,3 @@ class WindowGenerator:
         df_observations = df_observations.reindex(columns=ordered_columns)
 
         return df_observations
-      
