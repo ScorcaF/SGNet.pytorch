@@ -34,8 +34,13 @@ class SENSORDataLayer(data.Dataset):
             datasets = [r'/content/drive/MyDrive/driving_data/scorca_curved_2.csv',
                         r'/content/drive/MyDrive/driving_data/yacometti_curved_2.csv'] 
         elif split == 'test':
-            datasets = [r'/content/drive/MyDrive/driving_data/scorca_curved_3.csv',
-                        r'/content/drive/MyDrive/driving_data/yacometti_curved_3.csv'] 
+            if args.driver == 'all':
+                datasets = [r'/content/drive/MyDrive/driving_data/scorca_curved_3.csv',
+                            r'/content/drive/MyDrive/driving_data/yacometti_curved_3.csv']
+            elif args.driver == 'scorca':
+                    datasets = [r'/content/drive/MyDrive/driving_data/scorca_curved_3.csv']
+            elif args.driver == 'yacometti':
+                    datasets = [r'/content/drive/MyDrive/driving_data/yacometti_curved_3.csv']
         window_generator = WindowGenerator(prediction_horizon)
         X, Y = [], []
         for dataset in datasets:
@@ -150,6 +155,9 @@ class WindowGenerator:
             
         ]
 
+        df_observations = df_observations.reindex(columns=ordered_columns)
+
+        return df_observations
         df_observations = df_observations.reindex(columns=ordered_columns)
 
         return df_observations
