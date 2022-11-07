@@ -22,6 +22,7 @@ def parse_sgnet_args():
     parser.add_argument('--input_dim', default=15, type=int)
     parser.add_argument('--K', default=20, type=int)
     parser.add_argument('--save_dir', default='/content/drive/MyDrive/SGNet/checkpoints', type=str)
+    parser.add_argument('--driver', default='all', type=str)
 
 
     return parser.parse_args()
