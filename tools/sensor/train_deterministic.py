@@ -17,7 +17,6 @@ from lib.models import build_model
 from lib.losses import rmse_loss
 from lib.utils.sensor_train_utils import train, test
 
-from google.colab import files
 
 
 
@@ -25,7 +24,7 @@ from google.colab import files
 def main(args):
     this_dir = osp.dirname(__file__)
     model_name = args.model
-    save_dir = osp.join(this_dir, 'checkpoints', args.dataset, model_name, str(args.seed))
+    save_dir = args.save_dir
     if not osp.isdir(save_dir):
         os.makedirs(save_dir)
 
@@ -39,20 +38,17 @@ def main(args):
     model = model.to(device)
     if osp.isfile(args.checkpoint):
         checkpoint = torch.load(args.checkpoint, map_location=device)
-        
-
-        model.load_state_dict(checkpoint)
-        # optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
-        # args.start_epoch += checkpoint['epoch']
+        model.load_state_dict(checkpoint['model_state_dict'])
+        args.start_epoch += checkpoint['epoch']
         del checkpoint
 
 
     criterion = rmse_loss().to(device)
 
     train_gen = utl.build_data_loader(args, 'train', batch_size = 1)
-    # val_gen = utl.build_data_loader(args, 'val', batch_size = 1)
+    val_gen = utl.build_data_loader(args, 'val', batch_size = 1)
     test_gen = utl.build_data_loader(args, 'test', batch_size = 1)
-    # print("Number of validation samples:", val_gen.__len__())
+    print("Number of train samples:", train_gen.__len__())
     print("Number of test samples:", test_gen.__len__())
     # train
     min_loss = 1e6
@@ -63,7 +59,7 @@ def main(args):
 
 
     for epoch in range(args.start_epoch, args.epochs+args.start_epoch):
-        torch.save(model.state_dict(), save_dir + '.pth')
+        torch.save(model, save_dir + '.pth')
         print('saved to ', save_dir + '.pth')
         train_goal_loss, train_dec_loss, total_train_loss = train(model, train_gen, criterion, optimizer, device)
         
@@ -71,19 +67,19 @@ def main(args):
         print('Train Epoch: {} \t Goal loss: {:.4f}\t Decoder loss: {:.4f}\t Total: {:.4f}'.format(
                 epoch, train_goal_loss, train_dec_loss, total_train_loss))
 
-
-
-        # # val
-        # val_loss = val(model, val_gen, criterion, device)
-        # lr_scheduler.step(val_loss)
-
-
-        # # test
-        test_loss, ADE, FDE, = test(model, test_gen, criterion, device)
+        # val
+        val_loss = val(model, val_gen, criterion, device)
         if ADE < min_ADE:
           min_ADE = ADE
           torch.save(model.state_dict(), save_dir + '.pth')
-          files.download(save_dir + '.pth')
+          torch.save(model, save_dir + '.pth')
+          print('saved to ', save_dir + '.pth')
+        # lr_scheduler.step(val_loss)
+
+
+    # test
+    test_loss, ADE, FDE, = test(model, test_gen, criterion, device)
+
 
 
 if __name__ == '__main__':
