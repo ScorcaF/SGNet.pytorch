@@ -158,6 +158,3 @@ class WindowGenerator:
         df_observations = df_observations.reindex(columns=ordered_columns)
 
         return df_observations
-        df_observations = df_observations.reindex(columns=ordered_columns)
-
-        return df_observations
