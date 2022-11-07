@@ -11,13 +11,11 @@ from torch.nn import functional as F
 from torch.utils import data
 
 sys.path.append(os.getcwd())
-from configs.ethucy.ethucy import parse_sgnet_args as parse_args
+from configs.sensor.sensor import parse_sgnet_args as parse_args
 import lib.utils as utl
 from lib.models import build_model
 from lib.losses import rmse_loss
 from lib.utils.sensor_train_utils import train, test
-
-
 
 
 
@@ -59,8 +57,6 @@ def main(args):
 
 
     for epoch in range(args.start_epoch, args.epochs+args.start_epoch):
-        torch.save(model, save_dir + '.pth')
-        print('saved to ', save_dir + '.pth')
         train_goal_loss, train_dec_loss, total_train_loss = train(model, train_gen, criterion, optimizer, device)
         
 
@@ -68,18 +64,26 @@ def main(args):
                 epoch, train_goal_loss, train_dec_loss, total_train_loss))
 
         # val
-        val_loss = val(model, val_gen, criterion, device)
+        val_loss, ADE, FDE = test(model, val_gen, criterion, device)
         if ADE < min_ADE:
           min_ADE = ADE
-          torch.save(model.state_dict(), save_dir + '.pth')
-          torch.save(model, save_dir + '.pth')
+          torch.save({
+            'epoch': epoch,
+            'model_state_dict': model.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict()},
+            save_dir + '.pth')
+
           print('saved to ', save_dir + '.pth')
         # lr_scheduler.step(val_loss)
 
 
     # test
-    test_loss, ADE, FDE, = test(model, test_gen, criterion, device)
+    test_loss, ADE, FDE = test(model, test_gen, criterion, device)
 
+
+
+if __name__ == '__main__':
+    main(parse_args())
 
 
 if __name__ == '__main__':
