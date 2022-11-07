@@ -11,11 +11,11 @@ from torch.nn import functional as F
 from torch.utils import data
 sys.path.append(os.getcwd())
 
-from configs.ethucy.ethucy import parse_sgnet_args as parse_args
+from configs.sensor.sensor import parse_sgnet_args as parse_args
 import lib.utils as utl
 from lib.models import build_model
 from lib.losses import rmse_loss
-from lib.utils.sensor_train_utils import train, val, test
+from lib.utils.sensor_train_utils import train, test
 
 
 def main(args):
