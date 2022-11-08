@@ -9,6 +9,7 @@ import torch
 from torch import nn, optim
 from torch.nn import functional as F
 from torch.utils import data
+import pandas as pd
 
 sys.path.append(os.getcwd())
 from configs.sensor.sensor import parse_sgnet_args as parse_args
@@ -55,7 +56,7 @@ def main(args):
     best_model = None
     best_model_metric = None
 
-
+    results = pd.DataFrame()
     for epoch in range(args.start_epoch, args.epochs+args.start_epoch):
         train_goal_loss, train_dec_loss, total_train_loss = train(model, train_gen, criterion, optimizer, device)
         
@@ -65,15 +66,24 @@ def main(args):
 
         # val
         val_loss, ADE, FDE = test(model, val_gen, criterion, device)
+        results = results.append({
+                    'epoch': epoch,
+                    'train_goal_loss': train_goal_loss,
+                    'train_dec_loss': train_dec_loss,
+                    'total_train_loss': total_train_loss,
+                    'val_loss': val_loss,
+                    'ADE': ADE,
+                    'FDE': FDE}, ignore_index=True)
+        results.to_csv(f'{save_dir}/results_{args.dec_steps}_{args.seed}.csv', index = False)
         if ADE < min_ADE:
           min_ADE = ADE
           torch.save({
             'epoch': epoch,
             'model_state_dict': model.state_dict(),
             'optimizer_state_dict': optimizer.state_dict()},
-            save_dir + '.pth')
+            save_dir + '_' + str(epoch) + '.pth')
 
-          print('saved to ', save_dir + '.pth')
+          print(save_dir + '_' + str(epoch) + '.pth')
         # lr_scheduler.step(val_loss)
 
 
@@ -84,4 +94,3 @@ def main(args):
 
 if __name__ == '__main__':
     main(parse_args())
-
