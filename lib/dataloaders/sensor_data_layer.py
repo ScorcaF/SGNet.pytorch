@@ -100,8 +100,11 @@ class WindowGenerator:
 
 
     def make_timeseries_dataset_from_csv(self, filename: str):
-
+        
         df = pd.read_csv(filename)
+        if filename == r'/content/drive/MyDrive/driving_data/yacometti_curved_1.csv':
+          df = df[:3000]
+
         df_observations = self.preprocess(df)
         initial_observations_list, timeseries_list = self.make_timeseries_dataset(df_observations)
 
