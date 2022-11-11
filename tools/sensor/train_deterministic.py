@@ -44,9 +44,9 @@ def main(args):
 
     criterion = rmse_loss().to(device)
 
-    train_gen = utl.build_data_loader(args, 'train', batch_size = 1)
-    val_gen = utl.build_data_loader(args, 'val', batch_size = 1)
-    test_gen = utl.build_data_loader(args, 'test', batch_size = 1)
+    train_gen = utl.build_data_loader(args, 'train', batch_size = 32)
+    val_gen = utl.build_data_loader(args, 'val', batch_size = 32)
+    test_gen = utl.build_data_loader(args, 'test', batch_size = 32)
     print("Number of train samples:", train_gen.__len__())
     print("Number of test samples:", test_gen.__len__())
     # train
