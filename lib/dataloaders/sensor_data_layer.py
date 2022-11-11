@@ -26,7 +26,6 @@ class SENSORDataLayer(data.Dataset):
         self.split = split
         self.batch_size = args.batch_size
 
-        prediction_horizon = args.dec_steps
         if split == 'train':
             datasets = [r'/content/drive/MyDrive/driving_data/scorca_curved_1.csv',
                         r'/content/drive/MyDrive/driving_data/yacometti_curved_1.csv'] 
@@ -41,7 +40,10 @@ class SENSORDataLayer(data.Dataset):
                     datasets = [r'/content/drive/MyDrive/driving_data/scorca_curved_3.csv']
             elif args.driver == 'yacometti':
                     datasets = [r'/content/drive/MyDrive/driving_data/yacometti_curved_3.csv']
-        window_generator = WindowGenerator(prediction_horizon)
+        window_generator = WindowGenerator(
+                                          prediction_horizon=args.dec_steps,
+                                          history_horizon=args.enc_steps -1
+                                          )
         X, Y = [], []
         for dataset in datasets:
             X_partial, Y_partial = window_generator.make_timeseries_dataset_from_csv(dataset)
@@ -95,8 +97,9 @@ class SENSORDataLayer(data.Dataset):
 
 
 class WindowGenerator:
-    def __init__(self, prediction_horizon: int):
+    def __init__(self, prediction_horizon: int, history_horizon: int):
         self.prediction_horizon: int = prediction_horizon
+        self.history_horizon: int = history_horizon
 
 
     def make_timeseries_dataset_from_csv(self, filename: str):
@@ -107,6 +110,8 @@ class WindowGenerator:
 
         df_observations = self.preprocess(df)
         initial_observations_list, timeseries_list = self.make_timeseries_dataset(df_observations)
+        print(initial_observations_list.shape)
+        print(timeseries_list.shape)
 
         return initial_observations_list, timeseries_list
     
@@ -117,11 +122,16 @@ class WindowGenerator:
 
         for t in range(len(df) - self.prediction_horizon - 1):
 
-            x = df.iloc[t, :].to_numpy().reshape(1, -1)
-            y = df.iloc[t + 1: t + self.prediction_horizon + 1, :2].to_numpy()
+            if t >= self.history_horizon: 
+              x = df.iloc[t - self.history_horizon: t + 1 , :].to_numpy().reshape(self.history_horizon +1, -1)
+              y = df.iloc[t + 1: t + self.prediction_horizon + 1, :2].to_numpy()
 
-            X.append(x)
-            Y.append(y)
+            # else:
+            #   x = df.iloc[t, :].to_numpy().reshape(1, -1)
+            #   y = df.iloc[t + 1: t + self.prediction_horizon + 1, :2].to_numpy()
+
+              X.append(x)
+              Y.append(y)
         return np.array(X), np.array(Y)
       
 
