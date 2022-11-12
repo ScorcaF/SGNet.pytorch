@@ -23,7 +23,12 @@ from lib.utils.sensor_train_utils import train, test
 def main(args):
     this_dir = osp.dirname(__file__)
     model_name = args.model
-    save_dir = args.save_dir
+    save_dir = args.save_dir + \
+                str(args.seed) + \
+                '_hist' + \
+                str(args.enc_steps) + \
+                '_horz' + \
+                str(args.dec_steps)
     if not osp.isdir(save_dir):
         os.makedirs(save_dir)
 
@@ -44,11 +49,12 @@ def main(args):
 
     criterion = rmse_loss().to(device)
 
-    train_gen = utl.build_data_loader(args, 'train', batch_size = 32)
-    val_gen = utl.build_data_loader(args, 'val', batch_size = 32)
-    test_gen = utl.build_data_loader(args, 'test', batch_size = 32)
-    print("Number of train samples:", train_gen.__len__())
-    print("Number of test samples:", test_gen.__len__())
+    train_gen = utl.build_data_loader(args, 'train', batch_size = args.batch_size)
+    val_gen = utl.build_data_loader(args, 'val', batch_size = args.batch_size)
+    test_gen = utl.build_data_loader(args, 'test', batch_size = args.batch_size)
+    print("Number of train samples:", train_gen.__len__() * args.batch_size)
+    print("Number of val samples:", val_gen.__len__()* args.batch_size)
+    print("Number of test samples:", test_gen.__len__()* args.batch_size)
     # train
     min_loss = 1e6
     min_ADE = 10e5
@@ -81,9 +87,9 @@ def main(args):
             'epoch': epoch,
             'model_state_dict': model.state_dict(),
             'optimizer_state_dict': optimizer.state_dict()},
-            save_dir + '_' + str(epoch) + '.pth')
+            save_dir + '.pth')
 
-          print(save_dir + '_' + str(epoch) + '.pth')
+          print('Model saved to ', save_dir + '.pth')
         # lr_scheduler.step(val_loss)
 
 
