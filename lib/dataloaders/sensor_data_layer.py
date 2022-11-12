@@ -28,18 +28,27 @@ class SENSORDataLayer(data.Dataset):
 
         if split == 'train':
             datasets = [r'/content/drive/MyDrive/driving_data/scorca_curved_1.csv',
-                        r'/content/drive/MyDrive/driving_data/yacometti_curved_1.csv'] 
+                        r'/content/drive/MyDrive/driving_data/yacometti_curved_1.csv',
+                        r'/content/drive/MyDrive/controller_data/train.csv']
+
         elif split == 'val':
             datasets = [r'/content/drive/MyDrive/driving_data/scorca_curved_2.csv',
-                        r'/content/drive/MyDrive/driving_data/yacometti_curved_2.csv'] 
+                        r'/content/drive/MyDrive/driving_data/yacometti_curved_2.csv',
+                        r'/content/drive/MyDrive/controller_data/val.csv']
+
         elif split == 'test':
             if args.driver == 'all':
                 datasets = [r'/content/drive/MyDrive/driving_data/scorca_curved_3.csv',
-                            r'/content/drive/MyDrive/driving_data/yacometti_curved_3.csv']
+                            r'/content/drive/MyDrive/driving_data/yacometti_curved_3.csv',
+                            r'/content/drive/MyDrive/driving_data/scorca_straight_1.csv',
+                            r'/content/drive/MyDrive/driving_data/yacometti_straight_1.csv',
+                            r'/content/drive/MyDrive/controller_data/test.csv']
+
             elif args.driver == 'scorca':
                     datasets = [r'/content/drive/MyDrive/driving_data/scorca_curved_3.csv']
             elif args.driver == 'yacometti':
                     datasets = [r'/content/drive/MyDrive/driving_data/yacometti_curved_3.csv']
+
         window_generator = WindowGenerator(
                                           prediction_horizon=args.dec_steps,
                                           history_horizon=args.enc_steps -1
@@ -137,25 +146,14 @@ class WindowGenerator:
 
     def preprocess(self, df: pd.DataFrame):
 
-        df_observations = df.drop(columns=['gear', 'RPM', 'fXbody', 'sideSlipeAngle', 'wheelAngularVel', 'groundtruth'])
-        df_observations.reset_index(drop=True, inplace=True)
+        columns_to_remove = ['timestamp', 'gear', 'RPM', 'fXbody', 'sideSlipeAngle', 'wheelAngularVel', 'groundtruth']
+        if set(columns_to_remove) < set(df.columns):
+          df_observations = df.drop(columns=columns_to_remove).reset_index(drop=True)
+        elif set(['Travel_distance_X (m)', 'Travel_distance_Y (m)']) < set(df.columns):
+          columns_to_remove = ['Travel_distance_X (m)', 'Travel_distance_Y (m)']
+          df_observations = df.drop(columns=columns_to_remove).reset_index(drop=True)
 
-#         # Add travel distances
-#         last_index = df_observations.shape[0] - 1
-#         df_zeros = pd.DataFrame(0, index=np.arange(1), columns=['Travel_distance_X (m)', 'Travel_distance_Y (m)'])
-#         df_offsets = abs(df_observations.loc[1:, ['LongGPS', 'LatGPS']].reset_index(drop=True) \
-#                          - df_observations.loc[:last_index, ['LongGPS', 'LatGPS']].reset_index(
-#             drop=True))
-#         df_offsets = df_offsets.rename(columns={'LongGPS' : 'Travel_distance_X (m)',
-#                                                 'LatGPS': 'Travel_distance_Y (m)'
-#                                                 })
-#         df_offsets = df_offsets.drop(index=last_index)
-#         df_offsets = pd.concat((df_zeros, df_offsets)).reset_index(drop=True)
-#         df_offsets['timestamp'] = df_observations['timestamp']
-
-        # df_observations = df_observations.merge(df_offsets, on='timestamp')
-
-        df_observations = df_observations.drop(columns=['timestamp', 'steering', 'throttle', 'brake'])
+        df_observations = df_observations.drop(columns=['steering', 'throttle', 'brake'])
         ordered_columns = [
             'LongGPS', 'LatGPS',
             'LongVel', 'LatVel',
@@ -165,9 +163,9 @@ class WindowGenerator:
             'lCurvLane', 'rCurvLane',
             'lCurvDevLane', 'rCurvDevLane',
             'headingAngle',
-            
         ]
 
         df_observations = df_observations.reindex(columns=ordered_columns)
 
         return df_observations
+
