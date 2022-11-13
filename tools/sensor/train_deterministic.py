@@ -62,7 +62,11 @@ def main(args):
     best_model = None
     best_model_metric = None
 
-    results = pd.DataFrame()
+    if os.path.exists(f'{save_dir}/results_{args.dec_steps}_{args.seed}.csv'):
+      results = pd.read_csv(f'{save_dir}/results_{args.dec_steps}_{args.seed}.csv')
+      print('Loading results')
+    else:
+      results = pd.DataFrame()
     for epoch in range(args.start_epoch, args.epochs+args.start_epoch):
         train_goal_loss, train_dec_loss, total_train_loss = train(model, train_gen, criterion, optimizer, device)
         
