@@ -97,9 +97,6 @@ def main(args):
         # lr_scheduler.step(val_loss)
 
 
-    # test
-    test_loss, ADE, FDE = test(model, test_gen, criterion, device)
-
 
 
 if __name__ == '__main__':
