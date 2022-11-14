@@ -50,7 +50,7 @@ class SENSORDataLayer(data.Dataset):
                         ]
 
         elif split == 'test_controller':   
-            dataset = [r'/content/drive/MyDrive/controller_data/test.csv']
+            datasets = [r'/content/drive/MyDrive/controller_data/test.csv']
        
         window_generator = WindowGenerator(
                                           prediction_horizon=args.dec_steps,
@@ -171,4 +171,5 @@ class WindowGenerator:
         df_observations = df_observations.reindex(columns=ordered_columns)
 
         return df_observations
+
 
