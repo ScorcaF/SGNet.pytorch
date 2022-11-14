@@ -36,19 +36,22 @@ class SENSORDataLayer(data.Dataset):
                         r'/content/drive/MyDrive/driving_data/yacometti_curved_2.csv',
                         r'/content/drive/MyDrive/controller_data/val.csv']
 
-        elif split == 'test':
-            if args.driver == 'all':
-                datasets = [r'/content/drive/MyDrive/driving_data/scorca_curved_3.csv',
-                            r'/content/drive/MyDrive/driving_data/yacometti_curved_3.csv',
-                            r'/content/drive/MyDrive/driving_data/scorca_straight_1.csv',
-                            r'/content/drive/MyDrive/driving_data/yacometti_straight_1.csv',
-                            r'/content/drive/MyDrive/controller_data/test.csv']
+        elif split == 'test_all':
+            datasets = [r'/content/drive/MyDrive/driving_data/scorca_curved_3.csv',
+                        r'/content/drive/MyDrive/driving_data/yacometti_curved_3.csv',
+                        r'/content/drive/MyDrive/driving_data/scorca_straight_1.csv',
+                        r'/content/drive/MyDrive/driving_data/yacometti_straight_1.csv',
+                        r'/content/drive/MyDrive/controller_data/test.csv']
+        elif split == 'test_wheel':
+            datasets = [r'/content/drive/MyDrive/driving_data/scorca_curved_3.csv',
+                        r'/content/drive/MyDrive/driving_data/yacometti_curved_3.csv',
+                        r'/content/drive/MyDrive/driving_data/scorca_straight_1.csv',
+                        r'/content/drive/MyDrive/driving_data/yacometti_straight_1.csv',
+                        ]
 
-            elif args.driver == 'scorca':
-                    datasets = [r'/content/drive/MyDrive/driving_data/scorca_curved_3.csv']
-            elif args.driver == 'yacometti':
-                    datasets = [r'/content/drive/MyDrive/driving_data/yacometti_curved_3.csv']
-
+        elif split == 'test_controller':   
+            dataset = [r'/content/drive/MyDrive/controller_data/test.csv']
+       
         window_generator = WindowGenerator(
                                           prediction_horizon=args.dec_steps,
                                           history_horizon=args.enc_steps -1
