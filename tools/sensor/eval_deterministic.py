@@ -45,6 +45,40 @@ def main(args):
       print('Loading results')
     else:
       results = pd.DataFrame()
+    for test_split in ['test_all', 'test_scorca', 'test_yacometti']:
+        print(test_split)
+        
+        test_gen = utl.build_data_loader(args, test_split, batch_size = 1)
+        print("Number of test samples:", test_gen.__len__())
+        
+
+        # test
+        test_loss, ADE, FDE, = test(model, test_gen, criterion, device)
+
+        results = results.append({
+                    'enc_steps' : args.enc_steps,
+                    'dec_steps': args.dec_steps,
+                    'seed': args.seed,
+                    'ADE': ADE,
+                    'FDE': FDE}, ignore_index=True)
+        
+    results.to_csv(f'{save_dir}/results.csv', index = False)
+        
+
+if __name__ == '__main__':
+    main(parse_args())
+        checkpoint = torch.load(args.checkpoint, map_location=device)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        del checkpoint
+
+
+    criterion = rmse_loss().to(device)
+    
+    if os.path.exists(f'{save_dir}/results.csv'):
+      results = pd.read_csv(f'{save_dir}/results.csv')
+      print('Loading results')
+    else:
+      results = pd.DataFrame()
     for test_split in ['test_wheel', 'test_controller']:
         
         test_gen = utl.build_data_loader(args, test_split, batch_size = 1)
