@@ -41,16 +41,17 @@ class SENSORDataLayer(data.Dataset):
                         r'/content/drive/MyDrive/driving_data/yacometti_curved_3.csv',
                         r'/content/drive/MyDrive/driving_data/scorca_straight_1.csv',
                         r'/content/drive/MyDrive/driving_data/yacometti_straight_1.csv',
-                        r'/content/drive/MyDrive/controller_data/test.csv']
-        elif split == 'test_wheel':
+                        ]
+        elif split == 'test_scorca':
             datasets = [r'/content/drive/MyDrive/driving_data/scorca_curved_3.csv',
-                        r'/content/drive/MyDrive/driving_data/yacometti_curved_3.csv',
-                        r'/content/drive/MyDrive/driving_data/scorca_straight_1.csv',
-                        r'/content/drive/MyDrive/driving_data/yacometti_straight_1.csv',
+                        r'/content/drive/MyDrive/controller_data/test.csv',
+                        r'/content/drive/MyDrive/driving_data/scorca_straight_1.csv', 
                         ]
 
-        elif split == 'test_controller':   
-            datasets = [r'/content/drive/MyDrive/controller_data/test.csv']
+        elif split == 'test_yacometti':   
+            datasets = [r'/content/drive/MyDrive/driving_data/yacometti_curved_3.csv',
+                        r'/content/drive/MyDrive/driving_data/yacometti_straight_1.csv',
+            ]
        
         window_generator = WindowGenerator(
                                           prediction_horizon=args.dec_steps,
@@ -122,8 +123,6 @@ class WindowGenerator:
 
         df_observations = self.preprocess(df)
         initial_observations_list, timeseries_list = self.make_timeseries_dataset(df_observations)
-        print(initial_observations_list.shape)
-        print(timeseries_list.shape)
 
         return initial_observations_list, timeseries_list
     
