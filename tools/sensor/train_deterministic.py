@@ -51,7 +51,6 @@ def main(args):
 
     train_gen = utl.build_data_loader(args, 'train', batch_size = args.batch_size)
     val_gen = utl.build_data_loader(args, 'val', batch_size = args.batch_size)
-    test_gen = utl.build_data_loader(args, 'test', batch_size = args.batch_size)
     print("Number of train samples:", train_gen.__len__() * args.batch_size)
     print("Number of val samples:", val_gen.__len__()* args.batch_size)
     print("Number of test samples:", test_gen.__len__()* args.batch_size)
