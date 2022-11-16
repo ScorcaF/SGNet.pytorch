@@ -122,6 +122,12 @@ class WindowGenerator:
           df = df[:3000]
 
         df_observations = self.preprocess(df)
+        
+        # TODO: remove
+        if 'curved' in filename or 'straight'in filename:
+          df_observations['yawAngle'] = df_observations['headingAngle']
+
+        
         initial_observations_list, timeseries_list = self.make_timeseries_dataset(df_observations)
 
         return initial_observations_list, timeseries_list
