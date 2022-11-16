@@ -53,7 +53,6 @@ def main(args):
     val_gen = utl.build_data_loader(args, 'val', batch_size = args.batch_size)
     print("Number of train samples:", train_gen.__len__() * args.batch_size)
     print("Number of val samples:", val_gen.__len__()* args.batch_size)
-    print("Number of test samples:", test_gen.__len__()* args.batch_size)
     # train
     min_loss = 1e6
     min_ADE = 10e5
