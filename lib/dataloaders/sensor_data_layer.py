@@ -124,8 +124,7 @@ class WindowGenerator:
         df_observations = self.preprocess(df)
         
         # TODO: remove
-        if 'curved' in filename or 'straight'in filename:
-          df_observations['yawAngle'] = df_observations['headingAngle']
+
 
         
         initial_observations_list, timeseries_list = self.make_timeseries_dataset(df_observations)
@@ -156,6 +155,7 @@ class WindowGenerator:
 
         columns_to_remove = ['timestamp', 'gear', 'RPM', 'fXbody', 'sideSlipeAngle', 'wheelAngularVel', 'groundtruth']
         if set(columns_to_remove) < set(df.columns):
+          df_observations['yawAngle'] = df_observations['sideSlipeAngle']
           df_observations = df.drop(columns=columns_to_remove).reset_index(drop=True)
         elif set(['Travel_distance_X (m)', 'Travel_distance_Y (m)']) < set(df.columns):
           columns_to_remove = ['Travel_distance_X (m)', 'Travel_distance_Y (m)']
