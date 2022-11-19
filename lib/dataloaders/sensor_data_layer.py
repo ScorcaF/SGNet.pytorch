@@ -155,7 +155,7 @@ class WindowGenerator:
 
         columns_to_remove = ['timestamp', 'gear', 'RPM', 'fXbody', 'sideSlipeAngle', 'wheelAngularVel', 'groundtruth']
         if set(columns_to_remove) < set(df.columns):
-          df_observations['yawAngle'] = df_observations['sideSlipeAngle']
+          df['yawAngle'] = df['sideSlipeAngle']
           df_observations = df.drop(columns=columns_to_remove).reset_index(drop=True)
         elif set(['Travel_distance_X (m)', 'Travel_distance_Y (m)']) < set(df.columns):
           columns_to_remove = ['Travel_distance_X (m)', 'Travel_distance_Y (m)']
