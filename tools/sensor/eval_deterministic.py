@@ -48,7 +48,7 @@ def main(args):
     for test_split in ['test_all', 'test_scorca', 'test_yacometti']:
         print(test_split)
         
-        test_gen = utl.build_data_loader(args, test_split, batch_size = 1)
+        test_gen = utl.build_data_loader(args, test_split, args.batch_size)
         print("Number of test samples:", test_gen.__len__())
         
 
